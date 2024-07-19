@@ -7,6 +7,16 @@ from api.models import Blog
 from api.serializer import BlogSerializer
 
 
+from django.http import JsonResponse
+
+# def blog_list(request):
+#     blogs = [
+#         {"title": "Blog 1", "author": "Author 1", "category": "Category 1"},
+#         {"title": "Blog 2", "author": "Author 2", "category": "Category 2"}
+#     ]
+#     return JsonResponse(blogs, safe=False)
+
+
 # Create your views here.
 @api_view(['GET'])
 def home(request):
