@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog List</title>
+    <link rel="stylesheet" href="./style.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .blog-list {
+            list-style-type: none;
+            padding: 0;
+        }
+        .blog-list li {
+            margin: 10px 0;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Blog List</h1>
+    <hr>
+    <nav>
+        <a href="./list.html">post's list</a>
+        <a href="./form.html">create post</a>
+    </nav>
+    <hr>
+    <ul class="blog-list" id="blog-list"></ul>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            fetch('http://127.0.0.1:8000/blog-list/')
+                .then(response => response.json())
+                .then(data => {
+                    const blogList = document.getElementById('blog-list');
+                    data.forEach(blog => {
+                        const li = document.createElement('li');
+                        li.textContent = blog.title;
+                        li.setAttribute('data-id', blog.id);
+                        li.addEventListener('click', function() {
+                            window.location.href = `details.html?id=${blog.id}`;
+                        });
+                        blogList.appendChild(li);
+                    });
+                });
+        });
+    </script>
+</body>
+</html>

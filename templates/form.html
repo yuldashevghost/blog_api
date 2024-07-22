@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create Blog</title>
+    <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+    <h1>Create Blog</h1>
+    <hr>
+    <nav>
+        <a href="./list.html">post's list</a>
+        <a href="./form.html">create post</a>
+    </nav>
+    <hr>
+    <form id="blog-form">
+        <label for="title">Title:</label><br>
+        <input type="text" id="title" name="title" required><br><br>
+        <label for="author">Author:</label><br>
+        <input type="text" id="author" name="author" required><br><br>
+        <label for="category">Category:</label><br>
+        <input type="text" id="category" name="category" required><br><br>
+        <button type="submit">Create Blog</button>
+    </form>
+
+    <script>
+        document.getElementById('blog-form').addEventListener('submit', async function(event) {
+            event.preventDefault(); // Prevent the form from submitting the default way
+
+            const title = document.getElementById('title').value;
+            const author = document.getElementById('author').value;
+            const category = document.getElementById('category').value;
+
+            const blogData = {
+                title: title,
+                author: author,
+                category: category
+            };
+
+            try {
+                const response = await fetch('http://127.0.0.1:8000/blog-create/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(blogData)
+                });
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok ' + response.statusText);
+                }
+
+                const responseData = await response.json();
+                console.log('Blog created successfully:', responseData);
+                alert('Blog created successfully!');
+
+                // Optionally clear the form fields
+                document.getElementById('title').value = '';
+                document.getElementById('author').value = '';
+                document.getElementById('category').value = '';
+
+            } catch (error) {
+                console.error('There was a problem with the fetch operation:', error);
+                alert('Error creating blog.');
+            }
+        });
+    </script>
+</body>
+</html>

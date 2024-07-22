@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog Details</title>
+    <link rel="stylesheet" href="./style.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<h1>Blog details</h1>
+<hr>
+    <nav>
+        <a href="./list.html">post's list</a>
+        <a href="./form.html">create post</a>
+    </nav>
+<hr>
+    <h2 id="blog-title"></h2>
+    <p id="blog-author"></p>
+    <p id="blog-category"></p>
+    <p id="blog-content"></p>
+
+    <button onclick="showUpdateForm()">Edit Blog</button>
+    <button onclick="confirmDelete()">Delete Blog</button>
+    <button onclick="goBack()">Back to list</button>
+
+    <div id="update-form" class="hidden">
+        <h2>Update Blog</h2>
+        <form onsubmit="updateBlog(event)">
+            <label for="title">Title:</label>
+            <input type="text" id="title" name="title"><br><br>
+            <label for="author">Author:</label>
+            <input type="text" id="author" name="author"><br><br>
+            <label for="category">Category:</label>
+            <input type="text" id="category" name="category"><br><br>
+            <input type="submit" value="Update">
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const params = new URLSearchParams(window.location.search);
+            const blogId = params.get('id');
+
+            fetch(`http://127.0.0.1:8000/blog-details/${blogId}`)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('blog-title').textContent = data.title;
+                    document.getElementById('blog-author').textContent = `Author: ${data.author}`;
+                    document.getElementById('blog-category').textContent = `Category: ${data.category}`;
+                    document.getElementById('blog-content').textContent = data.content;
+
+                    document.getElementById('title').value = data.title;
+                    document.getElementById('author').value = data.author;
+                    document.getElementById('category').value = data.category;
+                });
+
+            window.blogId = blogId;
+        });
+
+        function showUpdateForm() {
+            document.getElementById('update-form').classList.remove('hidden');
+        }
+
+        function updateBlog(event) {
+            event.preventDefault();
+
+            const title = document.getElementById('title').value;
+            const author = document.getElementById('author').value;
+            const category = document.getElementById('category').value;
+
+            fetch(`http://127.0.0.1:8000/blog-update/${window.blogId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ title, author, category })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('blog-title').textContent = data.title;
+                document.getElementById('blog-author').textContent = `Author: ${data.author}`;
+                document.getElementById('blog-category').textContent = `Category: ${data.category}`;
+                alert('Blog updated successfully');
+                document.getElementById('update-form').classList.add('hidden');
+            });
+        }
+
+        function confirmDelete() {
+            const confirmed = confirm('Are you sure you want to delete this blog?');
+            if (confirmed) {
+                deleteBlog();
+            }
+        }
+
+        function deleteBlog() {
+            fetch(`http://127.0.0.1:8000/blog-delete/${window.blogId}`, {
+                method: 'DELETE'
+            })
+            .then(response => response.text())
+            .then(data => {
+                alert(data);
+                window.location.href = 'list.html';
+            });
+        }
+
+        function goBack() {
+            window.location.href = 'list.html';
+        }
+    </script>
+</body>
+</html>
